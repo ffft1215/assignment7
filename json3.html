@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Filter the data</title>
+		<style>
+			.product {
+				border: 1px solid #ccc;
+				margin: 10px;
+				padding: 10px;
+			}
+
+			body {
+				font-family: Avenir;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+			}
+
+			#filterForm {
+				text-align: center;
+				padding: 20px;
+				border: 1px solid #ccc;
+				border-radius: 5px;
+				background-color: #f0f0f0;
+			}
+		</style>
+	</head>
+	<body>
+		<div>
+			<form id="filterForm">
+				<label for="categorySelect">Select a Category: </label>
+				<select id="categorySelect"></select>
+				<button type="button" id="filterButton">Filter</button>
+			</form>
+		</div>
+		<div id="filteredProducts"></div>
+
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<script>
+			var products;
+
+			$.get(
+				"https://ffft1215.github.io/assignment7/products.json",
+				function (data) {
+					products = data;
+					var categoriesAdded = {};
+
+					products.forEach(function (product) {
+						product.categories.forEach(function (category) {
+							if (!categoriesAdded[category]) {
+								var option = document.createElement("option");
+								option.value = category;
+								option.text = category;
+								categorySelect.appendChild(option);
+								categoriesAdded[category] = true;
+							}
+						});
+					});
+				}
+			);
+
+			$("#filterButton").click(function () {
+				var selectedCategory = $("#categorySelect").val();
+				var filteredProducts = products.filter((product) =>
+					product.categories.includes(selectedCategory)
+				);
+
+				var filteredProductsDiv = document.getElementById("filteredProducts");
+				filteredProductsDiv.innerHTML = "";
+
+				filteredProducts.forEach(function (product) {
+					var productDiv = document.createElement("div");
+					productDiv.classList.add("product");
+					productDiv.innerHTML = `
+                    <h3>${product.name}</h3>
+                `;
+					filteredProductsDiv.appendChild(productDiv);
+				});
+			});
+		</script>
+	</body>
+</html>
